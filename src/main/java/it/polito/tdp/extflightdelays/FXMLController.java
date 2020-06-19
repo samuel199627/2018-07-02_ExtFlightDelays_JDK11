@@ -3,6 +3,7 @@ package it.polito.tdp.extflightdelays;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import it.polito.tdp.extflightdelays.model.Airport;
 import it.polito.tdp.extflightdelays.model.Model;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -33,30 +34,68 @@ public class FXMLController {
     private Button btnAnalizza;
 
     @FXML
-    private ComboBox<?> cmbBoxAeroportoPartenza;
+    private ComboBox<Airport> cmbBoxAeroportoPartenza;
 
     @FXML
     private Button btnAeroportiConnessi;
 
     @FXML
-    private TextField numeroVoliTxtInput;
+    private TextField numeroVoliTxtInput; //in realta' queste sono le miglia disponibili
 
     @FXML
     private Button btnCercaItinerario;
 
     @FXML
     void doAnalizzaAeroporti(ActionEvent event) {
-
+    	txtResult.clear();
+    	double distanzaInserita=0.0;
+    	try {
+    		distanzaInserita=Double.parseDouble(distanzaMinima.getText());
+    	}
+    	catch(NumberFormatException e) {
+    		txtResult.appendText("DEVI INSERIRE UN NUMERO!");
+    		return;
+    	}
+    	
+    	txtResult.appendText(model.creaGrafo(distanzaInserita));
+    	
+    	cmbBoxAeroportoPartenza.getItems().clear();
+    	cmbBoxAeroportoPartenza.getItems().addAll(model.estrarreVetici());
+    	
+    	
     }
 
     @FXML
     void doCalcolaAeroportiConnessi(ActionEvent event) {
+    	txtResult.clear();
+    	Airport selezionato=cmbBoxAeroportoPartenza.getValue();
+    	if(selezionato==null) {
+    		txtResult.appendText("DEVI SELEZIONARE UN AEREOPORTO");
+    	}
+    	
+    	txtResult.appendText(model.estrarreAdiacenti(selezionato));
 
     }
 
     @FXML
     void doCercaItinerario(ActionEvent event) {
-
+    	txtResult.clear();
+    	Airport selezionato=cmbBoxAeroportoPartenza.getValue();
+    	if(selezionato==null) {
+    		txtResult.appendText("DEVI SELEZIONARE UN AEREOPORTO");
+    	}
+    	
+    	double distanzaMassimaInserita=0.0;
+    	try {
+    		distanzaMassimaInserita=Double.parseDouble(numeroVoliTxtInput.getText());
+    	}
+    	catch(NumberFormatException e) {
+    		txtResult.appendText("DEVI INSERIRE UN NUMERO!");
+    		return;
+    	}
+    	
+    	txtResult.appendText(model.itinerario(selezionato, distanzaMassimaInserita));
+    	
     }
 
     @FXML
